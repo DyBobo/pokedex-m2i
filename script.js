@@ -1,4 +1,4 @@
-// On récupère les éléments HTML dont on a besoin
+// Get HTML elements
 const searchBtn = document.getElementById('searchBtn');
 const pokemonInput = document.getElementById('pokemonInput');
 const pokemonCard = document.getElementById('pokemonCard');
@@ -6,80 +6,81 @@ const pokemonModal = document.getElementById('pokemonModal');
 const closeModal = document.getElementById('closeModal');
 const modalDetails = document.getElementById('modalDetails');
 
-// 1. Fonction pour aller chercher un Pokémon sur l'API
+let searchHistory = []; // Array to store history
+
+// 1. Function to fetch a Pokemon from the API
 async function fetchPokemon(nameOrId) {
     try {
-        // On transforme le nom en minuscules (l'API n'aime pas les Majuscules)
+        // Convert input to lowercase as the API requires it
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${nameOrId.toLowerCase()}`);
         
         if (!response.ok) {
-            throw new Error("Pokémon non trouvé");
+            throw new Error("Pokemon not found"); // Error message translated [cite: 11]
         }
 
         const pokemon = await response.json();
-        displayPokemon(pokemon); // Si on le trouve, on l'affiche
+        displayPokemon(pokemon); 
     } catch (error) {
         pokemonCard.innerHTML = `<p style="color:red;">${error.message}</p>`;
     }
 }
 
-// 2. Fonction pour afficher le Pokémon dans la page
+// 2. Function to display the Pokemon on the main page
 function displayPokemon(pokemon) {
-    addToHistory(pokemon.name);
+    addToHistory(pokemon.name); // Add to the history list [cite: 15]
     pokemonCard.innerHTML = `
         <h2>${pokemon.name.toUpperCase()}</h2>
         <img src="${pokemon.sprites.front_default}" alt="${pokemon.name}">
         <p>Type: ${pokemon.types.map(t => t.type.name).join(', ')}</p>
-        <button onclick="showDetails(${pokemon.id})">Voir Détails</button>
+        <button onclick="showDetails(${pokemon.id})">View Details</button>
     `;
 }
 
-// 3. Écouter le clic sur le bouton Rechercher
+// 3. Search button click event
 searchBtn.addEventListener('click', () => {
     const value = pokemonInput.value;
     if (value) {
-        fetchPokemon(value);
+        fetchPokemon(value); // Search by name or ID [cite: 9]
     }
 });
-let searchHistory = []; // Tableau pour stocker l'historique
 
-// 4. Fonction pour afficher la MODAL avec les détails
+// 4. Function to display the MODAL with detailed info [cite: 13]
 async function showDetails(id) {
     try {
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
         const p = await response.json();
 
-        // On remplit la modal avec les infos (Poids, Taille, Stats)
+        // Fill the modal with weight, height, and stats [cite: 13]
         modalDetails.innerHTML = `
             <h2>${p.name.toUpperCase()}</h2>
             <img src="${p.sprites.other['official-artwork'].front_default}" width="150">
-            <p><strong>Poids :</strong> ${p.weight / 10} kg</p>
-            <p><strong>Taille :</strong> ${p.height / 10} m</p>
+            <p><strong>Weight:</strong> ${p.weight / 10} kg</p>
+            <p><strong>Height:</strong> ${p.height / 10} m</p>
             <div>
-                <strong>Statistiques :</strong>
+                <strong>Statistics:</strong>
                 <ul style="text-align:left; display:inline-block;">
                     ${p.stats.map(s => `<li>${s.stat.name}: ${s.base_stat}</li>`).join('')}
                 </ul>
             </div>
         `;
-        pokemonModal.style.display = "block"; // On montre la modal
+        pokemonModal.style.display = "block"; // Show the modal
     } catch (error) {
-        console.error("Erreur modal:", error);
+        console.error("Modal error:", error);
     }
 }
 
-// 5. Fermer la modal quand on clique sur le "X"
+// 5. Close modal when clicking the "X"
 closeModal.onclick = () => pokemonModal.style.display = "none";
 
-// 6. Gérer l'historique des 5 dernières recherches
+// 6. Manage search history (limit to 5) [cite: 15]
 function addToHistory(name) {
-    // Si le nom est déjà dans la liste, on l'enlève pour le remettre au début
+    // Remove if already exists to move it to the top
     searchHistory = searchHistory.filter(item => item !== name);
     
-    // On ajoute le nouveau nom au début du tableau
+    // Add new name to the beginning
     searchHistory.unshift(name);
 
-    // On garde seulement les 5 derniers
+    // Keep only the last 5 [cite: 15]
     if (searchHistory.length > 5) {
         searchHistory.pop();
     }
@@ -94,7 +95,38 @@ function updateHistoryDisplay() {
     ).join('');
 }
 
-// MODIFICATION de ta fonction fetch pour inclure l'historique
-// Remplace juste la fin de ta fonction fetchPokemon (là où il y a displayPokemon)
-// ou ajoute simplement cette ligne dans ta fonction displayPokemon existante :
-// addToHistory(pokemon.name);
+// 7. Function to generate 5 random Pokemon recommendations [cite: 18]
+async function generateRecommendations() {
+    const randomList = document.getElementById('randomList');
+    randomList.innerHTML = ""; 
+
+    for (let i = 0; i < 5; i++) {
+        const randomId = Math.floor(Math.random() * 1010) + 1;
+        
+        try {
+            const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randomId}`);
+            const p = await response.json();
+
+            const pokemonDiv = document.createElement('div');
+            pokemonDiv.className = "recommendation-item"; // Useful for CSS
+            pokemonDiv.style.display = "inline-block";
+            pokemonDiv.style.margin = "10px";
+            pokemonDiv.style.cursor = "pointer";
+            
+            pokemonDiv.innerHTML = `
+                <img src="${p.sprites.front_default}" alt="${p.name}" width="80">
+                <p style="font-size: 12px;">${p.name}</p>
+            `;
+
+            // Click to show details in modal [cite: 18]
+            pokemonDiv.onclick = () => showDetails(p.id);
+            
+            randomList.appendChild(pokemonDiv);
+        } catch (error) {
+            console.error("Recommendation error:", error);
+        }
+    }
+}
+
+// INITIALIZATION: Run recommendations on page load [cite: 17]
+generateRecommendations();
