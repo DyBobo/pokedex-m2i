@@ -1,18 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokedex - Dylan BOLADO</title> 
-    <link rel="icon" type="image/png" href="pokeball_icon.png">
+    <title>Mon Pokedex - Dylan BOLADO</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="errorMessage" class="error-toast">Pokémon not found !</div>
+    <div id="errorMessage" class="error-toast">Pokémon non trouvé !</div>
 
     <div class="logo-container">
-        <img src="Pokédex_logo.png" alt="Pokedex Logo" class="pokedex-logo">
+        <img src="Pokédex_logo.png" alt="Logo" class="pokedex-logo">
     </div>
     
     <div class="main-frame">
@@ -21,46 +19,36 @@
         </header>
 
         <div class="content">
-            <section class="search-section">
-                <input type="text" id="pokemonInput" placeholder="Pokemon name or ID...">
-                <button id="searchBtn">Search</button>
-            </section>
+            <div class="search-section">
+                <input type="text" id="pokemonInput" placeholder="Nom ou ID du Pokémon...">
+                <button id="searchBtn">Chercher</button>
+            </div>
 
-            <section class="history-section">
-                <h3>Search History</h3>
+            <div class="history-section">
+                <h3>Historique</h3>
                 <ul id="historyList" class="pokemon-grid"></ul>
-            </section>
+            </div>
 
-            <div id="pokemonCard"></div>
-
-            <section class="separator">
+            <div class="separator">
                 <div class="title-with-btn">
-                    <h3>Recommendations</h3>
-                    <button id="refreshRecommendations" title="Changer les recommandations">
-                        &#8635;
-                    </button>
+                    <h3>Recommandations</h3>
+                    <button id="refreshRecommendations">&#8635;</button>
                 </div>
                 <div id="randomList" class="pokemon-grid"></div>
-            </section>
+            </div>
 
-            <section class="separator">
-                <h3>My Favorites</h3>
+            <div class="separator">
+                <h3>Mes Favoris</h3>
                 <div id="favoritesList" class="pokemon-grid"></div>
-            </section>
+            </div>
         </div>
     </div>
 
     <div id="pokemonModal">
-        <div id="loadingSpinner" class="spinner" style="display: none;"></div>
-
-        <div class="modal-content" id="modalContent">
+        <div id="loadingSpinner" class="spinner"></div>
+        <div class="modal-content">
             <span id="closeModal">&times;</span>
             <div id="modalDetails"></div>
-            
-            <div id="evolutionSection" class="separator" style="display: none;">
-                <h4>Evolutions</h4>
-                <div id="evolutionList" class="pokemon-grid"></div>
-            </div>
         </div>
     </div>
 

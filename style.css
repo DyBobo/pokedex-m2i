@@ -1,4 +1,3 @@
-/* General Style & Background */
 body {
     margin: 0;
     padding: 0; 
@@ -12,7 +11,6 @@ body {
     min-height: 100vh;
 }
 
-/* --- Logo au-dessus du cadre --- */
 .logo-container {
     text-align: center;
     width: 100%;
@@ -32,7 +30,6 @@ body {
     transform: scale(1.03);
 }
 
-/* Le cadre central - VERSION AGRANDIE */
 .main-frame {
     background: rgba(235, 235, 235, 0.95);
     width: 95%;
@@ -65,7 +62,6 @@ body {
     text-align: center; 
 }
 
-/* --- HARMONISATION DES TITRES --- */
 .content h3, .title-with-btn h3 {
     font-size: 1.6em;
     color: #333;
@@ -73,14 +69,12 @@ body {
     text-transform: none;
 }
 
-/* --- LE TRAIT NOIR UNIQUE (SEPARATOR) --- */
 .separator {
     border-top: 3px solid #333;
     margin-top: 40px;
     padding-top: 20px;
 }
 
-/* Barre de recherche */
 .search-section { margin-bottom: 30px; }
 
 #pokemonInput {
@@ -104,7 +98,6 @@ body {
     transition: 0.3s;
 }
 
-/* --- MESSAGE D'ERREUR ÉPHÉMÈRE (TOAST) --- */
 .error-toast {
     position: fixed;
     top: 40px;
@@ -130,7 +123,6 @@ body {
     transform: translateX(-50%) translateY(0);
 }
 
-/* --- ANIMATION DU CHARGEMENT (SPINNER) --- */
 .spinner {
     width: 60px;
     height: 60px;
@@ -147,7 +139,6 @@ body {
     100% { transform: rotate(360deg); }
 }
 
-/* --- TITRE AVEC BOUTON REFRESH --- */
 .title-with-btn {
     display: inline-flex;
     align-items: center;
@@ -172,7 +163,6 @@ body {
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
-/* --- MODAL CENTRÉE AVEC ANIMATION D'ENTRÉE --- */
 #pokemonModal {
     position: fixed; 
     z-index: 2000; 
@@ -192,7 +182,6 @@ body {
     text-align: center;
     position: relative; 
     border: 4px solid #dc0a2d;
-    /* On utilise l'animation fadeInUp pour la demande du prof */
     animation: fadeInUp 0.4s ease-out;
 }
 
@@ -207,7 +196,6 @@ body {
     }
 }
 
-/* --- LA CROIX ROUGE EN HAUT À DROITE --- */
 #closeModal { 
     position: absolute; 
     right: 15px;
@@ -226,7 +214,6 @@ body {
     transform: scale(1.1); 
 }
 
-/* --- CARTE PRINCIPALE ET GRILLES --- */
 #pokemonCard {
     background: white;
     border: 2px solid #333;
@@ -283,7 +270,6 @@ body {
     border-color: #dc0a2d;
 }
 
-/* Stats */
 .stats-container ul {
     display: flex;
     flex-wrap: wrap;
@@ -300,7 +286,6 @@ body {
     font-size: 13px;
 }
 
-/* --- ADAPTATION MOBILE (RESPONSIVE) --- */
 @media (max-width: 768px) {
     .main-frame {
         width: 98%;
