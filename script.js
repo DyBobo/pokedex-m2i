@@ -18,10 +18,41 @@ async function fetchPokemon(nameOrId) {
             throw new Error("Pokemon not found");
         }
         const pokemon = await response.json();
-        displayPokemon(pokemon); 
+
+        // On ajoute quand même à l'historique
+        addToHistory({
+            name: pokemon.name,
+            sprite: pokemon.sprites.front_default
+        });
+
+        // AU LIEU d'afficher dans la page, on remplit la MODAL
+        modalDetails.innerHTML = `
+            <div class="pokemon-modal-view">
+                <h2 style="color: #dc0a2d;">${pokemon.name.toUpperCase()}</h2>
+                <img src="${pokemon.sprites.other['official-artwork'].front_default}" alt="${pokemon.name}" style="width:200px;">
+                
+                <p><strong>Type:</strong> ${pokemon.types.map(t => t.type.name).join(', ')}</p>
+                <p><strong>W:</strong> ${pokemon.weight / 10} kg | <strong>H:</strong> ${pokemon.height / 10} m</p>
+
+                <div class="stats-container">
+                    <strong>Statistics:</strong>
+                    <ul style="display:flex; flex-wrap:wrap; justify-content:center; gap:5px; list-style:none; padding:10px;">
+                        ${pokemon.stats.map(s => `<li style="background:#dc0a2d; color:white; padding:4px 10px; border-radius:10px; font-size:12px;">${s.stat.name}: ${s.base_stat}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <button onclick="toggleFavorite('${pokemon.name}', '${pokemon.sprites.front_default}')" 
+                        style="background:#ffca28; color:black; border:none; padding:10px 20px; border-radius:10px; cursor:pointer; font-weight:bold; margin-top:10px;">
+                    ⭐ Add to Favorites
+                </button>
+            </div>
+        `;
+
+        // On affiche la modal
+        pokemonModal.style.display = "block";
+
     } catch (error) {
-        pokemonCard.style.display = "block";
-        pokemonCard.innerHTML = `<p style="color:red;">${error.message}</p>`;
+        alert(error.message); // Une petite alerte si le Pokémon n'existe pas
     }
 }
 
@@ -32,29 +63,35 @@ function displayPokemon(pokemon) {
         sprite: pokemon.sprites.front_default
     });
 
-    // Make the card visible
     pokemonCard.style.display = "block";
 
-    // Directly show all details in the main card
+    // Nouvelle structure : Image à gauche, Infos à droite
     pokemonCard.innerHTML = `
         <div class="pokemon-main-card">
-            <h2>${pokemon.name.toUpperCase()}</h2>
-            <img src="${pokemon.sprites.other['official-artwork'].front_default}" alt="${pokemon.name}" style="width:180px;">
-            
-            <p><strong>Type:</strong> ${pokemon.types.map(t => t.type.name).join(', ')}</p>
-            <p><strong>Weight:</strong> ${pokemon.weight / 10} kg | <strong>Height:</strong> ${pokemon.height / 10} m</p>
-
-            <div class="stats-container">
-                <strong>Statistics:</strong>
-                <ul style="padding:0; list-style:none; display:flex; flex-wrap:wrap; justify-content:center; gap:5px;">
-                    ${pokemon.stats.map(s => `<li style="background:#ef5350; color:white; padding:3px 8px; border-radius:10px; font-size:11px;">${s.stat.name}: ${s.base_stat}</li>`).join('')}
-                </ul>
+            <div class="card-image-section">
+                <img src="${pokemon.sprites.other['official-artwork'].front_default}" 
+                     alt="${pokemon.name}" 
+                     style="width:150px; filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.1));">
             </div>
+            
+            <div class="card-info-section">
+                <h2>${pokemon.name.toUpperCase()}</h2>
+                <p style="margin: 5px 0;"><strong>Type:</strong> ${pokemon.types.map(t => t.type.name).join(', ')}</p>
+                <p style="margin: 5px 0; font-size: 0.9em; color: #666;">
+                    W: ${pokemon.weight / 10} kg | H: ${pokemon.height / 10} m
+                </p>
 
-            <button onclick="toggleFavorite('${pokemon.name}', '${pokemon.sprites.front_default}')" 
-                    style="background:#ffca28; color:black; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; margin-top:10px;">
-                ⭐ Add to Favorites
-            </button>
+                <div class="stats-container">
+                    <ul>
+                        ${pokemon.stats.map(s => `<li>${s.stat.name.replace('special-', 'sp-')}: ${s.base_stat}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <button onclick="toggleFavorite('${pokemon.name}', '${pokemon.sprites.front_default}')" 
+                        style="background:#ffca28; color:black; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:bold; width:100%;">
+                    ⭐ Add to Favorites
+                </button>
+            </div>
         </div>
     `;
 }
@@ -141,7 +178,7 @@ async function generateRecommendations() {
                 <p style="font-size: 12px; margin:0;">${p.name}</p>
             `;
             // Recommendations still open the modal
-            pokemonDiv.onclick = () => showDetails(p.id);
+            pokemonDiv.onclick = () => fetchPokemon(p.name); // Ceci lance la recherche complète
             randomList.appendChild(pokemonDiv);
         } catch (error) {
             console.error("Recommendation error:", error);

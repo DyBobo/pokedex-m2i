@@ -1,147 +1,141 @@
-/* General Style */
+/* General Style & Background */
 body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    text-align: center;
-    padding: 20px;
-    color: #333;
-
-    /* Configuration du Fond d'écran avec Pokéball */
-    background: linear-gradient(rgba(240, 240, 240, 0.8), rgba(240, 240, 240, 0.8)), 
-                url('pokeball_icon.png');
-    background-attachment: fixed; /* Le fond reste fixe quand on défile */
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover; /* L'image couvre tout l'écran */
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background: url('Poke.webp') no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
-h1 { 
-    color: #ef5350; 
-    text-transform: uppercase; 
-    text-shadow: 1px 1px 2px white; /* Petit contour pour faire ressortir le titre */
+/* Le cadre central inspiré de ton image */
+.main-frame {
+    background: rgba(235, 235, 235, 0.95);
+    width: 95%;
+    max-width: 700px;
+    border: 4px solid #333;
+    border-radius: 20px;
+    overflow-y: auto;
+    max-height: 90vh;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
 }
 
-/* Search Bar */
-input {
-    padding: 10px;
-    width: 250px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+.header-red {
+    background: #dc0a2d;
+    padding: 15px;
+    border-bottom: 4px solid #333;
+    color: white;
+}
+
+.header-red h1 { margin: 0; text-transform: uppercase; letter-spacing: 2px; }
+
+.content { padding: 20px; }
+
+/* Search Bar Arrondie */
+.search-section { margin-bottom: 25px; }
+
+#pokemonInput {
+    padding: 12px 20px;
+    width: 60%;
+    border-radius: 25px;
+    border: 2px solid #dc0a2d;
     outline: none;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-button {
-    padding: 10px 20px;
-    background-color: #ef5350;
+#searchBtn {
+    padding: 12px 25px;
+    background-color: #dc0a2d;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 25px;
     cursor: pointer;
+    font-weight: bold;
     transition: 0.3s;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-button:hover { 
-    background-color: #d32f2f; 
-    transform: scale(1.05);
-}
+#searchBtn:hover { transform: scale(1.05); background: #b00824; }
 
-/* Main Pokemon Card (The search result) */
+/* La Carte Pokémon Horizontale */
 #pokemonCard {
-    margin: 20px auto;
-    padding: 20px;
     background: white;
-    max-width: 350px;
-    border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2); /* Ombre plus forte pour détacher du fond */
+    border: 2px solid #333;
+    border-radius: 15px;
+    margin: 20px auto;
+    overflow: hidden;
 }
 
-/* 3. FIX: Hide the white banner when empty */
-#pokemonCard:empty {
-    display: none;
+.pokemon-main-card {
+    display: flex;
+    align-items: center;
 }
 
-/* Statistics inside the card */
-.stats-container ul {
+.card-image-section {
+    background: #f0f0f0;
+    padding: 15px;
+    border-right: 2px solid #333;
+}
+
+.card-info-section {
+    padding: 15px;
+    text-align: left;
+    flex-grow: 1;
+}
+
+.card-info-section h2 { margin: 0; color: #dc0a2d; }
+
+/* Grilles pour Historique, Recommendations et Favoris */
+.pokemon-grid {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 8px;
+    gap: 10px;
     padding: 0;
-    margin-top: 10px;
+    list-style: none;
+}
+
+.recommendation-item, .fav-item, #historyList li {
+    background: white;
+    border: 2px solid #333;
+    border-radius: 10px;
+    padding: 10px;
+    transition: 0.2s;
+}
+
+.recommendation-item:hover { transform: translateY(-3px); background: #fff5f5; }
+
+/* Stats en petits badges */
+.stats-container ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 0;
+    list-style: none;
 }
 
 .stats-container li {
-    background: #ef5350;
+    background: #444;
     color: white;
-    padding: 5px 12px;
-    border-radius: 15px;
-    font-size: 12px;
-    cursor: default;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: 10px;
 }
 
-/* Favorites and History items */
-.fav-item, #historyList li, .recommendation-item {
-    display: inline-block;
-    margin: 10px;
-    padding: 10px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    transition: 0.3s;
-    cursor: pointer;
-    text-align: center;
-}
-
-.fav-item:hover, #historyList li:hover, .recommendation-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-}
-
-/* Specific button for "Remove" in Favorites */
-.remove-btn {
-    display: block;
-    background: none;
-    color: #ef5350;
-    text-decoration: underline;
-    font-size: 11px;
-    margin: 5px auto 0;
-    padding: 0;
-    width: auto;
-}
-
-.remove-btn:hover {
-    background: none;
-    color: black;
-}
-
-/* Modal Styling */
+/* Modal */
 #pokemonModal {
-    position: fixed;
-    z-index: 100;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.7);
+    position: fixed; z-index: 200;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
     display: none;
 }
 
 .modal-content {
-    background-color: white;
-    margin: 10% auto;
-    padding: 25px;
-    width: 90%;
-    max-width: 350px;
-    border-radius: 20px;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    background: white; margin: 10% auto;
+    padding: 20px; width: 300px;
+    border-radius: 15px; text-align: center;
+    position: relative; border: 3px solid #dc0a2d;
 }
 
-#closeModal {
-    position: absolute;
-    right: 15px; top: 10px;
-    font-size: 24px;
-    cursor: pointer;
-    color: #aaa;
-}
+#closeModal { position: absolute; right: 15px; top: 5px; font-size: 28px; cursor: pointer; }
