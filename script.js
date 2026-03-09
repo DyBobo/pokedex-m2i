@@ -25,15 +25,59 @@ function showError() {
     }
 }
 
+// --- OPTION : RÉCUPÉRATION DES ÉVOLUTIONS ---
+async function fetchEvolutions(pokemonName) {
+    const evoContainer = document.getElementById('evolutionContainer');
+    if (!evoContainer) return;
+    evoContainer.innerHTML = `<p style="font-size:12px; color:gray;">Chargement des évolutions...</p>`;
+
+    try {
+        // 1. Récupérer les données de l'espèce pour trouver l'URL de la chaîne d'évolution
+        const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokemonName.toLowerCase()}`);
+        const speciesData = await speciesRes.json();
+        
+        // 2. Récupérer la chaîne d'évolution
+        const evoRes = await fetch(speciesData.evolution_chain.url);
+        const evoData = await evoRes.json();
+
+        // 3. Parcourir la chaîne et construire le HTML
+        let evoHtml = `<div style="display:flex; justify-content:center; align-items:center; gap:10px; margin-top:10px;">`;
+        let currentEvo = evoData.chain;
+
+        while (currentEvo) {
+            const name = currentEvo.species.name;
+            // On récupère l'image de chaque Pokémon de la chaîne
+            const pRes = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
+            const pData = await pRes.json();
+            const img = pData.sprites.front_default;
+
+            evoHtml += `
+                <div style="text-align:center; cursor:pointer;" onclick="fetchPokemon('${name}')">
+                    <img src="${img}" width="50" style="background:#eee; border-radius:50%; border:1px solid #dc0a2d;">
+                    <p style="font-size:10px; margin:0; font-weight:bold;">${name}</p>
+                </div>
+            `;
+
+            if (currentEvo.evolves_to.length > 0) {
+                evoHtml += `<span style="font-weight:bold; color:#dc0a2d;">→</span>`;
+            }
+            currentEvo = currentEvo.evolves_to[0];
+        }
+        evoHtml += `</div>`;
+        evoContainer.innerHTML = `<strong style="font-size:13px; color:#333;">Évolutions :</strong>` + evoHtml;
+
+    } catch (error) {
+        evoContainer.innerHTML = ""; // On ne montre rien si erreur ou pas d'évolution
+    }
+}
+
 // 1. Function to fetch a Pokemon with LOADING ANIMATION
 async function fetchPokemon(nameOrId) {
     if (!nameOrId) return;
 
-    // Éléments pour l'animation de chargement
     const spinner = document.getElementById('loadingSpinner');
     const modalContent = document.querySelector('.modal-content');
 
-    // On affiche la modal, on montre le spinner et on cache le contenu
     pokemonModal.style.display = "flex";
     if (spinner) spinner.style.display = "block";
     if (modalContent) modalContent.style.opacity = "0"; 
@@ -52,27 +96,32 @@ async function fetchPokemon(nameOrId) {
             sprite: pokemon.sprites.front_default
         });
 
-        // Contenu de la fenêtre modale
+        // Contenu de la fenêtre modale (Ajout de la div evolutionContainer à la fin)
         modalDetails.innerHTML = `
             <div class="pokemon-modal-view">
-                <h2 style="color: #dc0a2d;">${pokemon.name.toUpperCase()}</h2>
-                <img src="${pokemon.sprites.other['official-artwork'].front_default}" alt="${pokemon.name}" style="width:220px;">
+                <h2 style="color: #dc0a2d; margin-bottom:5px;">${pokemon.name.toUpperCase()}</h2>
+                <img src="${pokemon.sprites.other['official-artwork'].front_default}" alt="${pokemon.name}" style="width:180px;">
                 <p><strong>Type:</strong> ${pokemon.types.map(t => t.type.name).join(', ')}</p>
                 <p><strong>Poids:</strong> ${pokemon.weight / 10} kg | <strong>Taille:</strong> ${pokemon.height / 10} m</p>
+                
                 <div class="stats-container">
-                    <strong>Statistiques :</strong>
-                    <ul style="display:flex; flex-wrap:wrap; justify-content:center; gap:5px; list-style:none; padding:10px;">
-                        ${pokemon.stats.map(s => `<li style="background:#dc0a2d; color:white; padding:4px 10px; border-radius:10px; font-size:12px;">${s.stat.name}: ${s.base_stat}</li>`).join('')}
+                    <ul style="display:flex; flex-wrap:wrap; justify-content:center; gap:5px; list-style:none; padding:5px;">
+                        ${pokemon.stats.map(s => `<li style="background:#dc0a2d; color:white; padding:3px 8px; border-radius:10px; font-size:11px;">${s.stat.name}: ${s.base_stat}</li>`).join('')}
                     </ul>
                 </div>
+
+                <div id="evolutionContainer" style="margin-top:15px; border-top: 1px solid #ccc; padding-top:10px;"></div>
+
                 <button onclick="toggleFavorite('${pokemon.name}', '${pokemon.sprites.front_default}')" 
-                        style="background:#ffca28; color:black; border:none; padding:10px 20px; border-radius:10px; cursor:pointer; font-weight:bold; margin-top:10px;">
+                        style="background:#ffca28; color:black; border:none; padding:10px 20px; border-radius:10px; cursor:pointer; font-weight:bold; margin-top:15px;">
                     ⭐ Ajouter aux Favoris
                 </button>
             </div>
         `;
         
-        // On cache le spinner et on affiche le contenu avec l'animation CSS
+        // --- LANCEMENT DE LA RECHERCHE DES ÉVOLUTIONS ---
+        fetchEvolutions(pokemon.name);
+        
         if (spinner) spinner.style.display = "none";
         if (modalContent) {
             modalContent.style.opacity = "1";
@@ -82,7 +131,6 @@ async function fetchPokemon(nameOrId) {
         pokemonInput.value = ""; 
         
     } catch (error) {
-        // En cas d'erreur, on referme la modal et on montre le Toast
         pokemonModal.style.display = "none";
         showError();
     }
