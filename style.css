@@ -21,7 +21,7 @@ body {
 }
 
 .pokedex-logo {
-    max-width: 600px;
+    max-width: 320px;
     width: 90%;
     height: auto;
     filter: drop-shadow(0 8px 20px rgba(0,0,0,0.5));
