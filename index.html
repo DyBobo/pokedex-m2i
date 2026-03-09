@@ -9,6 +9,12 @@
 </head>
 <body>
 
+    <div id="errorMessage" class="error-toast">Pokémon not found !</div>
+
+    <div class="logo-container">
+        <img src="Pokédex_logo.png" alt="Pokedex Logo" class="pokedex-logo">
+    </div>
+    
     <div class="main-frame">
         
         <header class="header-red">
@@ -28,12 +34,17 @@
 
             <div id="pokemonCard"></div>
 
-            <section>
-                <h3>Recommendations</h3>
+            <section class="separator">
+                <div class="title-with-btn">
+                    <h3>Recommendations</h3>
+                    <button id="refreshRecommendations" title="Changer les recommandations">
+                        &#8635;
+                    </button>
+                </div>
                 <div id="randomList" class="pokemon-grid"></div>
             </section>
 
-            <section>
+            <section class="separator">
                 <h3>My Favorites</h3>
                 <div id="favoritesList" class="pokemon-grid"></div>
             </section>
