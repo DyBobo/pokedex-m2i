@@ -1,7 +1,6 @@
 // Get HTML elements
 const searchBtn = document.getElementById('searchBtn');
 const pokemonInput = document.getElementById('pokemonInput');
-const pokemonCard = document.getElementById('pokemonCard');
 const pokemonModal = document.getElementById('pokemonModal');
 const closeModal = document.getElementById('closeModal');
 const modalDetails = document.getElementById('modalDetails');
@@ -16,24 +15,28 @@ let favorites = JSON.parse(localStorage.getItem('pokedexFavorites')) || [];
 function showError() {
     const errorBox = document.getElementById('errorMessage');
     if (errorBox) {
-        // On force le reset si on clique trop vite plusieurs fois
         errorBox.classList.remove('show');
-        
-        // Petit délai pour déclencher l'animation
         setTimeout(() => {
             errorBox.classList.add('show');
         }, 10);
-
-        // On retire le message après 3 secondes
         setTimeout(() => {
             errorBox.classList.remove('show');
         }, 3000);
     }
 }
 
-// 1. Function to fetch a Pokemon from the API
+// 1. Function to fetch a Pokemon with LOADING ANIMATION
 async function fetchPokemon(nameOrId) {
     if (!nameOrId) return;
+
+    // Éléments pour l'animation de chargement
+    const spinner = document.getElementById('loadingSpinner');
+    const modalContent = document.querySelector('.modal-content');
+
+    // On affiche la modal, on montre le spinner et on cache le contenu
+    pokemonModal.style.display = "flex";
+    if (spinner) spinner.style.display = "block";
+    if (modalContent) modalContent.style.opacity = "0"; 
 
     try {
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${nameOrId.toLowerCase()}`);
@@ -44,7 +47,6 @@ async function fetchPokemon(nameOrId) {
         
         const pokemon = await response.json();
 
-        // On ajoute à l'historique seulement si la recherche réussit
         addToHistory({
             name: pokemon.name,
             sprite: pokemon.sprites.front_default
@@ -70,28 +72,28 @@ async function fetchPokemon(nameOrId) {
             </div>
         `;
         
-        pokemonModal.style.display = "flex";
-        pokemonInput.value = ""; // On vide la barre de recherche
+        // On cache le spinner et on affiche le contenu avec l'animation CSS
+        if (spinner) spinner.style.display = "none";
+        if (modalContent) {
+            modalContent.style.opacity = "1";
+            modalContent.style.display = "block";
+        }
+        
+        pokemonInput.value = ""; 
         
     } catch (error) {
-        showError(); // Affiche le message éphémère si erreur
+        // En cas d'erreur, on referme la modal et on montre le Toast
+        pokemonModal.style.display = "none";
+        showError();
     }
 }
 
-// 2. Gestion de l'historique avec mémoire locale
+// 2. Gestion de l'historique
 function addToHistory(pokemonObj) {
-    // Supprime le doublon s'il existe
     searchHistory = searchHistory.filter(item => item.name !== pokemonObj.name);
-    
-    // Ajoute en haut de liste
     searchHistory.unshift(pokemonObj);
+    if (searchHistory.length > 5) searchHistory.pop();
     
-    // Garde seulement les 5 derniers
-    if (searchHistory.length > 5) {
-        searchHistory.pop();
-    }
-    
-    // Sauvegarde locale
     localStorage.setItem('pokedexHistory', JSON.stringify(searchHistory));
     updateHistoryDisplay();
 }
@@ -112,7 +114,7 @@ function updateHistoryDisplay() {
     });
 }
 
-// 3. Favoris avec mémoire locale
+// 3. Favoris
 function toggleFavorite(name, sprite) {
     const index = favorites.findIndex(p => p.name === name);
     if (index === -1) {
@@ -146,7 +148,7 @@ function updateFavoritesDisplay() {
     });
 }
 
-// 4. Recommendations aléatoires
+// 4. Recommendations
 async function generateRecommendations() {
     const randomList = document.getElementById('randomList');
     if (!randomList) return;
@@ -173,7 +175,6 @@ async function generateRecommendations() {
 }
 
 // --- EVENEMENTS ---
-
 searchBtn.addEventListener('click', () => {
     const value = pokemonInput.value.trim();
     fetchPokemon(value);
@@ -187,7 +188,6 @@ closeModal.onclick = () => {
     pokemonModal.style.display = "none";
 };
 
-// Fermer en cliquant à côté de la fenêtre blanche
 window.onclick = (event) => {
     if (event.target == pokemonModal) {
         pokemonModal.style.display = "none";

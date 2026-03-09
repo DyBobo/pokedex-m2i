@@ -27,7 +27,7 @@
                 <button id="searchBtn">Search</button>
             </section>
 
-            <section>
+            <section class="history-section">
                 <h3>Search History</h3>
                 <ul id="historyList" class="pokemon-grid"></ul>
             </section>
@@ -52,7 +52,9 @@
     </div>
 
     <div id="pokemonModal">
-        <div class="modal-content">
+        <div id="loadingSpinner" class="spinner" style="display: none;"></div>
+
+        <div class="modal-content" id="modalContent">
             <span id="closeModal">&times;</span>
             <div id="modalDetails"></div>
         </div>
